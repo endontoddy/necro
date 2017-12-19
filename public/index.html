@@ -37,7 +37,7 @@
         render() { return (
             <tr id="controls"><td colSpan="3">
               <button type="button" onClick={this.addNewMember}>Add Member</button>
-              <select id="newRole" onChange={this.handleUpdate}>
+              <select id="newRole" value={this.state.newRole} onChange={this.handleUpdate}>
                 <option value="Leader" >Leader</option>
                 <option value="Champion">Champion</option>
                 <option value="Ganger">Ganger</option>

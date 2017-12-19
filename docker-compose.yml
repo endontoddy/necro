@@ -7,4 +7,4 @@ services:
     volumes:
       - .:/src
     tty: true
-    command: "npm start"
+    command: bash -c "npm install && npm start"
