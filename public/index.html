@@ -1,0 +1,114 @@
+<html>
+  <head>
+    <script type="text/javascript" src="libs/react/umd/react.development.js"></script>
+    <script type="text/javascript" src="libs/react-dom/umd/react-dom.development.js"></script>
+    <script type="text/javascript" src="libs/babel-standalone/babel.js"></script>
+
+    <script type="text/babel">
+
+      const roleCosts = {
+        "Leader": 100,
+        "Champion": 80,
+        "Ganger": 50,
+        "Juve": 40
+      }
+
+      function costOfMember(member) {
+        return roleCosts[member.role]
+      }
+
+      class NewMemberForm extends React.Component {
+        state = {
+          nextId: 1,
+          newRole: 'Ganger'
+        }
+
+        handleUpdate = (e) => {
+          this.setState({ newRole: e.target.value })
+        }
+
+        addNewMember = () => {
+          this.props.callback(
+            { id: this.state.nextId, name: '', role: this.state.newRole }
+          )
+          this.setState(() => { return { nextId: this.state.nextId + 1 } })
+        }
+
+        render() { return (
+            <tr id="controls"><td colSpan="3">
+              <button type="button" onClick={this.addNewMember}>Add Member</button>
+              <select id="newRole" onChange={this.handleUpdate}>
+                <option value="Leader" >Leader</option>
+                <option value="Champion">Champion</option>
+                <option value="Ganger">Ganger</option>
+                <option value="Juve">Juve</option>
+              </select>
+            </td></tr>
+          )
+        }
+      }
+
+      class Roster extends React.Component {
+        state = {
+          nextId: 1,
+          members: [],
+          memberToEdit: 0
+        }
+
+        addNewMember = (newMember) => {
+          this.setState(() => {return {
+              members: this.state.members.concat([newMember])
+            }}
+          )
+        }
+
+        editGanger = (m) => {
+          this.setState({ memberToEdit: m.id })
+        }
+
+        updateGanger = (id, update) => {
+          this.setState({
+            members: this.state.members.map(m =>
+              m.id === id
+                ? Object.assign(m, update)
+                : m
+            )
+          })
+        }
+
+        render() {
+          return (
+            <div className="roster">
+              <table>
+                <tbody>
+                  <tr><th>Name</th><th>Role</th><th>Cost</th></tr>
+                {
+                  this.state.members.map( m =>
+                    m.id === this.state.memberToEdit
+                      ? <tr key={m.id}>
+                          <td><input type="text" onInput={(e) => this.updateGanger(m.id, { name: e.target.value} )} value={m.name} /></td>
+                          <td>{m.role}</td>
+                          <td>{costOfMember(m)}</td>
+                        </tr>
+                      : <tr key={m.id} onClick={this.editGanger.bind(this, m)}>
+                          <td>{m.name}</td>
+                          <td>{m.role}</td>
+                          <td>{costOfMember(m)}</td>
+                        </tr>
+                  )
+                }
+                <NewMemberForm callback={this.addNewMember.bind(this)} />
+              </tbody></table>
+            </div>
+          )
+        }
+      }
+
+      ReactDOM.render(<Roster />, document.getElementById('table'))
+    </script>
+
+  </head>
+  <body>
+    <div id='table'></div>
+  </body>
+</html>
